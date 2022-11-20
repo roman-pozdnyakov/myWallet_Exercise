@@ -1,16 +1,20 @@
 ﻿string[] currencies = {"RUB", "USD", "EUR", "BTC", "GBP", "JPY", "BYR"};
-float[,] rates = {  {1, 1, 1, 1, 1, 1, 1}, 
+float[,] rates = {  {1, 1, 1, 1, 1, 1, 1},  // таблица с курсами
                     {1, 1, 1, 1, 1, 1, 1}, 
                     {1, 1, 1, 1, 1, 1, 1}, 
                     {1, 1, 1, 1, 1, 1, 1}, 
                     {1, 1, 1, 1, 1, 1, 1}, 
+                    {1, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 1} };
-float[] wallet = {50000, 100, 500, 2, 300, 3000, 15000};
+float[] wallet = {50000, 100, 500, 2, 300, 3000, 15000}; // Начальные суммы
 bool isContinue = true;
 
 Console.Clear();
 //int index = Array.IndexOf(currencies, "ETH");
 //Console.WriteLine(index);
+
+Console.WriteLine("Доступные суммы:");
+for (int i = 0; i < currencies.Length; i++) Console.WriteLine(currencies[i] + " " + wallet[i]);
 
 while (isContinue)
 {
@@ -20,14 +24,25 @@ while (isContinue)
     
     switch (userEntry)
     {   case "display":
+            Console.Clear();
             Console.WriteLine("Доступные суммы:");
             for (int i = 0; i < currencies.Length; i++) Console.WriteLine(currencies[i] + " " + wallet[i]);
             break;
-        /* case "equiv":
-            Console.Write("Задайте пароль: ");
-            userPassword = Console.ReadLine();
+        case "equiv":
+            double equivAmount = 0;
+            Console.Write("Отображение суммарного баланса в одной из валют. Введите код валюты: ");
+            string chosenCurrency = Console.ReadLine();
+            chosenCurrency = chosenCurrency.ToUpper();
+            int chosenCurrencyIndex = Array.IndexOf(currencies, chosenCurrency);
+            if (chosenCurrencyIndex != -1)
+            for (int i = 0; i < currencies.Length; i++)
+            {
+                equivAmount = equivAmount + wallet[i]*rates[i, chosenCurrencyIndex];
+            }
+            else Console.WriteLine("Такой валюты нет. Введите код валюты или exit для возврата в предыдущее меню.");
+            Console.WriteLine($"Эквивалент = {currencies[chosenCurrencyIndex]} {equivAmount}");
             break;
-        case "transfer":
+        /* case "transfer":
             if (userPassword != "")
             {
                 Console.Write("Введите пароль: ");
