@@ -1,7 +1,8 @@
 ﻿bool isContinue = true;
-string fromCurrency;
+string? fromCurrency;
 double fromCurrAmt;
-string toCurrency;
+string? toCurrency;
+double rubEquiv;
 
 Dictionary<string, double> myWallet = new Dictionary<string, double>();
 myWallet.Add("RUB", 50000);
@@ -55,7 +56,7 @@ while (isContinue)
             while(true)
             {
                 Console.Write("Введите код валюты: ");
-                string chosenCurrency = Console.ReadLine();
+                string? chosenCurrency = Console.ReadLine();
                 chosenCurrency = chosenCurrency.ToUpper();
                 if (myWallet.ContainsKey(chosenCurrency))
                 {
@@ -73,6 +74,7 @@ while (isContinue)
             }
             break;
         case "transfer":
+            Console.WriteLine("Перевод сумм из одной валюты в другую.");
             while (true)
             {
                 Console.Write("Введите исходную валюту: ");
@@ -81,7 +83,6 @@ while (isContinue)
                 if (myWallet.ContainsKey(fromCurrency)) break;
                 else Console.WriteLine("Такой валюты нет.");
             }
-            
             while (true)
             {
                 Console.Write("Введите сумму для перечисления: ");
@@ -97,9 +98,7 @@ while (isContinue)
                 if (myWallet.ContainsKey(toCurrency)) break;
                 else Console.WriteLine("Такой валюты нет.");
             }
-            
-            
-            double rubEquiv = fromCurrAmt * myRates[fromCurrency];
+            rubEquiv = fromCurrAmt * myRates[fromCurrency];
             myWallet[toCurrency] += rubEquiv / myRates[toCurrency];
             myWallet[fromCurrency] -= fromCurrAmt;
             Console.WriteLine("Остаток после операции:");
@@ -108,67 +107,32 @@ while (isContinue)
             break;
 
         case "convert":
-        
-                    string fromCurrency;
-            double fromCurrAmt;
-            string toCurrency;
-
+            Console.WriteLine("Справочный пересчёт из одной валюты в другую.");
+            double toCurrAmt;
             while (true)
             {
                 Console.Write("Введите исходную валюту: ");
                 fromCurrency = Console.ReadLine();
                 fromCurrency = fromCurrency.ToUpper();
                 if (myWallet.ContainsKey(fromCurrency)) break;
-                else Console.WriteLine("Такой валюты нет.");
+                else Console.WriteLine("Я не знаю такую валюту :(");
             }
+            Console.Write("Введите сумму для конвертации: ");
+            fromCurrAmt = Convert.ToDouble(Console.ReadLine());
             
-            while (true)
-            {
-                Console.Write("Введите сумму для перечисления: ");
-                fromCurrAmt = Convert.ToDouble(Console.ReadLine());
-                if (fromCurrAmt <= myWallet[fromCurrency]) break;
-                else Console.WriteLine($"Введённая сумма больше имеющегося остатка ({fromCurrency} {myWallet[fromCurrency]})");
-            }
             while (true)
             {
                 Console.Write("Введите целевую валюту: ");
                 toCurrency = Console.ReadLine();
                 toCurrency = toCurrency.ToUpper();
                 if (myWallet.ContainsKey(toCurrency)) break;
-                else Console.WriteLine("Такой валюты нет.");
+                else Console.WriteLine("Я не знаю такую валюту :(");
             }
             
-            
-            double rubEquiv = fromCurrAmt * myRates[fromCurrency];
-            myWallet[toCurrency] += rubEquiv / myRates[toCurrency];
-            myWallet[fromCurrency] -= fromCurrAmt;
-            Console.WriteLine("Остаток после операции:");
-            Console.WriteLine(fromCurrency + " -> " + myWallet[fromCurrency]);
-            Console.WriteLine(toCurrency + " -> " + myWallet[toCurrency]);
-            break;
-        
-            while (true)
-            {
-                Console.Write("Доступные валюты:");
-                for (int i = 0; i < currencies.Length; i++) Console.Write(currencies[i] + " ");
-                Console.WriteLine();
-                Console.Write("Из какой валюты? ");
-                string fromCur = Console.ReadLine();
-                Console.Write("Введите сумму: ");
-                double fromAmount = ConverTo.Double(Console.ReadLine());
-                Console.Write("В какую валюту? ");
-                string fromCur = Console.ReadLine();
-                
-                double amount = Convert.ToDouble(Console.ReadLine());
-            }
-            if (userPassword != "")
-            {
-                Console.Write("Введите пароль: ");
-                userEntry = Console.ReadLine();
-                if (userEntry == userPassword) Console.WriteLine(userName);
-                else Console.WriteLine("Неверный пароль");
-            }
-            else Console.WriteLine("Пароль не задан, сначала используйте команду SetPassword");
+            rubEquiv = fromCurrAmt * myRates[fromCurrency];
+            toCurrAmt = Math.Round(rubEquiv / myRates[toCurrency], 2);
+
+            Console.WriteLine($"Примерный эквивалент {fromCurrency} {fromCurrAmt} = {toCurrency} {toCurrAmt}");
             break;
 
        case "help":
@@ -180,10 +144,12 @@ while (isContinue)
             Console.WriteLine("Exit        – Выход (на любом этапе ввода");
             Console.WriteLine("Help        – вывести список команд");
             break;
+
         case "exit":
             isContinue = false;
             break;
         default:
+
             Console.WriteLine("Команда не найдена");
             break;
     }
