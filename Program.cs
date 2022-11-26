@@ -1,15 +1,7 @@
-﻿/*string[] currencies = {"RUB", "USD", "EUR", "BTC", "GBP", "JPY", "BYR"};
-// курсы ---> to    RUB USD EUR BTC GBP JPY BYR
-float[,] rates = {  {1, 60.4797, 62.8762, 1002406.54, 73.4345, 0.734345, 25.0320},  // from RUB
-                    {1, 1, 1, 1, 1, 1, 1},  // from USD
-                    {1, 1, 1, 1, 1, 1, 1},  // from EUR
-                    {1, 1, 1, 1, 1, 1, 1},  // from BTC
-                    {1, 1, 1, 1, 1, 1, 1},  // from GBP
-                    {1, 1, 1, 1, 1, 1, 1},  // from JPY
-                    {1, 1, 1, 1, 1, 1, 1} }; // from BYR
-float[] wallet = {50000,   100,   500,     2,   300,  3000, 15000};
-*/
-bool isContinue = true;
+﻿bool isContinue = true;
+string fromCurrency;
+double fromCurrAmt;
+string toCurrency;
 
 Dictionary<string, double> myWallet = new Dictionary<string, double>();
 myWallet.Add("RUB", 50000);
@@ -31,18 +23,7 @@ myRates.Add("JPY", 0.734345);
 myRates.Add("BYR", 25.0320);
 myRates.Add("CNY", 8.42448);
 
-/*
-foreach (KeyValuePair<string, float> kvp in myWallet)
-{
-    Console.WriteLine("Currency = {0}, Amount = {1}", kvp.Key, kvp.Value);
-}
-
-Console.WriteLine("USD" + myWallet["USD"]);
-*/ 
-
 Console.Clear();
-//int index = Array.IndexOf(currencies, "ETH");
-//Console.WriteLine(index);
 
 Console.WriteLine("Доступные суммы:");
 foreach (KeyValuePair<string, double> kvp in myWallet)
@@ -76,25 +57,59 @@ while (isContinue)
                 Console.Write("Введите код валюты: ");
                 string chosenCurrency = Console.ReadLine();
                 chosenCurrency = chosenCurrency.ToUpper();
-                Console.WriteLine("ChosenCurrency: " + chosenCurrency);
-                Console.WriteLine(myWallet.ContainsKey(chosenCurrency));
                 if (myWallet.ContainsKey(chosenCurrency))
                 {
                     foreach (KeyValuePair<string, double> kvp in myWallet)
                     {
                         equivAmount += myWallet[kvp.Key] * myRates[kvp.Key];
-                        Console.WriteLine(kvp.Key + " " + kvp.Value + " * " + myRates[kvp.Key] + " = " + equivAmount);
+// контроль                        Console.WriteLine(kvp.Key + " " + kvp.Value + " * " + myRates[kvp.Key] + " = " + equivAmount);
                     } 
-                    Console.WriteLine("Cумма в рублях: " + equivAmount);
+// контроль                    Console.WriteLine("Cумма в рублях: " + equivAmount);
                     equivAmount = Math.Round(equivAmount / myRates[chosenCurrency],4);
-                    Console.WriteLine($"Эквивалент кошелька: {chosenCurrency} {equivAmount}");
+                    Console.WriteLine($"Эквивалент кошелька в {chosenCurrency} {equivAmount}");
                     break;
                 }
                 else Console.WriteLine("Такой валюты нет.");
             }
             break;
         case "transfer":
-            string fromCurrency;
+            while (true)
+            {
+                Console.Write("Введите исходную валюту: ");
+                fromCurrency = Console.ReadLine();
+                fromCurrency = fromCurrency.ToUpper();
+                if (myWallet.ContainsKey(fromCurrency)) break;
+                else Console.WriteLine("Такой валюты нет.");
+            }
+            
+            while (true)
+            {
+                Console.Write("Введите сумму для перечисления: ");
+                fromCurrAmt = Convert.ToDouble(Console.ReadLine());
+                if (fromCurrAmt <= myWallet[fromCurrency]) break;
+                else Console.WriteLine($"Введённая сумма больше имеющегося остатка ({fromCurrency} {myWallet[fromCurrency]})");
+            }
+            while (true)
+            {
+                Console.Write("Введите целевую валюту: ");
+                toCurrency = Console.ReadLine();
+                toCurrency = toCurrency.ToUpper();
+                if (myWallet.ContainsKey(toCurrency)) break;
+                else Console.WriteLine("Такой валюты нет.");
+            }
+            
+            
+            double rubEquiv = fromCurrAmt * myRates[fromCurrency];
+            myWallet[toCurrency] += rubEquiv / myRates[toCurrency];
+            myWallet[fromCurrency] -= fromCurrAmt;
+            Console.WriteLine("Остаток после операции:");
+            Console.WriteLine(fromCurrency + " -> " + myWallet[fromCurrency]);
+            Console.WriteLine(toCurrency + " -> " + myWallet[toCurrency]);
+            break;
+
+        case "convert":
+        
+                    string fromCurrency;
             double fromCurrAmt;
             string toCurrency;
 
@@ -131,8 +146,7 @@ while (isContinue)
             Console.WriteLine(fromCurrency + " -> " + myWallet[fromCurrency]);
             Console.WriteLine(toCurrency + " -> " + myWallet[toCurrency]);
             break;
-
-        /*case "convert":
+        
             while (true)
             {
                 Console.Write("Доступные валюты:");
@@ -156,7 +170,7 @@ while (isContinue)
             }
             else Console.WriteLine("Пароль не задан, сначала используйте команду SetPassword");
             break;
-            */
+
        case "help":
             Console.WriteLine("Display     – Вывести остатки по валютам");
             Console.WriteLine("Equiv       – Отобразить эквивалент кошелька в одной из валют");
